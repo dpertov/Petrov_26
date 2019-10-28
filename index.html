@@ -1,0 +1,88 @@
+
+<!DOCTYPE HTML>
+<html lang="en-US">
+	<head>
+	 <meta charset="UTF-8">
+	 <title>Money Converter</title>
+	  
+	</head>
+
+	<style>
+
+		h1 {
+			text-align: center;
+		}
+
+	</style>
+
+	<body>
+		<div class="wrapper">
+		 	<h1> Конвертер Валют</h1>
+			<form>
+				
+				<h3>Выберите валюту</h3>
+				<select class="select" onchange="currency = this.selectedIndex">;
+					<option></option>
+				</select>
+
+				<h3>Введите сумму в гривне</h3>
+				<input class="input"
+					type = "text" 
+					id = "Node"
+					name = "createNode"
+				>
+				<button class="submit">
+				  	<strong>Считать</strong> 
+				</button>
+			</form>
+	 	</div>
+		 
+		<script>
+	 	 	const $input = document.querySelector('.input');
+			const $money = document.querySelector('.submit');
+			const $select = document.querySelector('.select');
+			let currency;
+			let arrayRezult = [];
+
+			fetch('https://bank.gov.ua/NBUStatService/v1/statdirectory/exchange?json')
+			.then(res => res.json())
+			.then(res => { 
+				res.forEach((item, index) => {
+					createElement (item, index);
+				})
+			})
+
+			function createElement (arr, ind) {
+				arrayRezult[ind] = arr;
+				const $option = document.createElement('option');
+				$option.innerText = arr.txt + ',  ' + arr.cc + ',  ' + arr.rate.toFixed(3);
+				$option.id = arr.r030;
+				$select.append($option);
+			};
+
+			function moneyConverter(num) {
+				let i = currency - 1;
+				let result = num / arrayRezult[i].rate;
+				alert(num  + ' Гривень = ' + result.toFixed(2) + ' ' + arrayRezult[i].txt );
+			}
+			
+			$money.addEventListener('click', (event) => {
+				event.preventDefault();
+				$input.value = +$input.value;
+			
+				if ( $input.value && $input.value > 0 )  { 
+					moneyConverter(+$input.value);
+					$input.value = '';
+				}	
+				else {
+					alert('Вводить можно только числа больше 0');
+					return  $input.value = '';
+				}
+			});	
+
+		</script>
+
+
+	    </body>
+	</html>
+	
